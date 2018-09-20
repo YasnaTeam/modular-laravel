@@ -1,0 +1,32 @@
+{
+    "name": "dutymess/modular-laravel",
+    "description": "A package to make a modular framework out of Laravel",
+    "type": "library",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Taha Kamkar",
+            "email": "github.taha@gmail.com"
+        }
+    ],
+    "keywords": ["Laravel","Modular","dutymess"],
+    "minimum-stability": "dev",
+    "autoload": {
+        "psr-4": {
+            "Dutymess\\Modules\\": "src"
+        }
+    },
+    "extra": {
+        "laravel": {
+            "providers": [
+                "Dutymess\\Modular\\ModularLaravelServiceProvider"
+            ],
+            "aliases": {
+            }
+        }
+    },
+    "require": {
+
+    },
+    "prefer-stable": true
+}
