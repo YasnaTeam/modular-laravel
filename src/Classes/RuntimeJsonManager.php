@@ -32,7 +32,7 @@ class RuntimeJsonManager
         if (!$key) {
             return static::$array;
         }
-        if(isset(static::$array[$key])) {
+        if (isset(static::$array[$key])) {
             static::$array[$key];
         }
 
@@ -41,9 +41,32 @@ class RuntimeJsonManager
 
 
 
-    public static function write()
+    /**
+     * set something in the static array and write the file
+     *
+     * @param string $key
+     * @param mixed  $value
+     *
+     * @return void
+     */
+    public static function set(string $key, $value)
     {
+        static::$array[$key] = $value;
+        static::writeToFile();
+    }
 
+
+
+    /**
+     * write the static array into the file
+     *
+     * @return void
+     */
+    protected static function writeToFile()
+    {
+        $file = fopen(static::getFilePath(), 'w', true);
+        fwrite($file, json_encode(static::$array,JSON_PRETTY_PRINT));
+        fclose($file);
     }
 
 
@@ -57,7 +80,18 @@ class RuntimeJsonManager
     {
         $json = file_get_contents(static::getFilePath());
 
-        return json_decode($json, true);
+        try {
+            $array = json_decode($json, true);
+        } catch (\Exception $e) {
+            $array = null;
+        }
+
+        if(!is_array($array)) {
+            static::createFile();
+            return [];
+        }
+
+        return $array;
     }
 
 
@@ -86,9 +120,8 @@ class RuntimeJsonManager
     {
         static::makePath(static::getDirectoryPath());
 
-        $file = fopen(static::getFilePath(), 'w', true);
-        fwrite($file, static::getEmptyTemplate());
-        fclose($file);
+        static::$array = static::getEmptyTemplate();
+        static::writeToFile();
     }
 
 
@@ -155,13 +188,13 @@ class RuntimeJsonManager
     /**
      * get a template content for the runtime JSON file
      *
-     * @return string
+     * @return array
      */
     protected static function getEmptyTemplate()
     {
-        return json_encode([
+        return [
              "active_modules" => [],
-        ]);
+        ];
     }
 
 }
