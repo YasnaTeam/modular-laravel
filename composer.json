@@ -1,5 +1,5 @@
 {
-    "name": "dutymess/modular-laravel",
+    "name": "yasnateam/modular-laravel",
     "description": "A package to make a modular framework out of Laravel",
     "type": "library",
     "license": "MIT",
@@ -9,17 +9,17 @@
             "email": "github.taha@gmail.com"
         }
     ],
-    "keywords": ["Laravel","Modular","dutymess"],
+    "keywords": ["Laravel","Modular","dutymess","Taha","Yasnateam"],
     "minimum-stability": "dev",
     "autoload": {
         "psr-4": {
-            "Dutymess\\Modules\\": "src"
+            "Yasnateam\\Modules\\": "src"
         }
     },
     "extra": {
         "laravel": {
             "providers": [
-                "Dutymess\\Modular\\ModularLaravelServiceProvider"
+                "Yasnateam\\Modular\\ModularLaravelServiceProvider"
             ],
             "aliases": {
             }
