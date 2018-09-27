@@ -3,6 +3,7 @@
 namespace Yasnateam\Modular;
 
 use Illuminate\Support\ServiceProvider;
+use Yasnateam\Modular\Classes\RuntimeJsonManager;
 
 class ModularLaravelServiceProvider extends ServiceProvider
 {
@@ -15,7 +16,21 @@ class ModularLaravelServiceProvider extends ServiceProvider
     {
         $this->registerConfigs();
         $this->registerHelper();
+        $this->prepareRuntimeJson();
     }
+
+
+
+    /**
+     * Register services.
+     *
+     * @return void
+     */
+    public function register()
+    {
+    }
+
+
 
     /**
      * register package configs
@@ -28,9 +43,11 @@ class ModularLaravelServiceProvider extends ServiceProvider
 
         $this->mergeConfigFrom($path, "modular");
         $this->publishes([
-            $path => config_path("modules.php"),
+             $path => config_path("modules.php"),
         ], "config");
     }
+
+
 
     /**
      * register package helpers
@@ -42,13 +59,13 @@ class ModularLaravelServiceProvider extends ServiceProvider
         require_once __DIR__ . DIRECTORY_SEPARATOR . "helpers.php";
     }
 
+
+
     /**
-     * Register services.
-     *
-     * @return void
+     * prepare runtime JSON
      */
-    public function register()
+    protected function prepareRuntimeJson()
     {
-        //
+        RuntimeJsonManager::read();
     }
 }
