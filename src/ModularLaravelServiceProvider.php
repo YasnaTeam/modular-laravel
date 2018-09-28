@@ -3,7 +3,7 @@
 namespace Yasnateam\Modular;
 
 use Illuminate\Support\ServiceProvider;
-use Yasnateam\Modular\Classes\RuntimeJsonManager;
+use Yasnateam\Modular\Classes\RuntimeProvider;
 
 class ModularLaravelServiceProvider extends ServiceProvider
 {
@@ -16,7 +16,8 @@ class ModularLaravelServiceProvider extends ServiceProvider
     {
         $this->registerConfigs();
         $this->registerHelper();
-        $this->prepareRuntimeJson();
+
+        $this->bindRuntime();
     }
 
 
@@ -28,6 +29,7 @@ class ModularLaravelServiceProvider extends ServiceProvider
      */
     public function register()
     {
+        //
     }
 
 
@@ -62,10 +64,12 @@ class ModularLaravelServiceProvider extends ServiceProvider
 
 
     /**
-     * prepare runtime JSON
+     * bind a singleton instance of RuntimeJsonManager to the app service container
+     *
+     * @return void
      */
-    protected function prepareRuntimeJson()
+    protected function bindRuntime()
     {
-        RuntimeJsonManager::read();
+        $this->app->instance('modularRuntime', (new RuntimeProvider()));
     }
 }
