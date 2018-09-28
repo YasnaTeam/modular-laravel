@@ -3,14 +3,24 @@
 namespace Yasnateam\Modular\Classes;
 
 
-class RuntimeJsonManager
+class RuntimeProvider
 {
     /**
      * keep an array version of the JSON file
      *
      * @var array|null
      */
-    protected static $array = null;
+    protected $array = null;
+
+
+
+    /**
+     * RuntimeProvider constructor.
+     */
+    public function __construct()
+    {
+        $this->createFileIfNotExist();
+    }
 
 
 
@@ -21,19 +31,17 @@ class RuntimeJsonManager
      *
      * @return array|string
      */
-    public static function read($key = null)
+    public function read($key = null)
     {
-        static::createFileIfNotExist();
-
-        if (!is_array(static::$array)) {
-            static::$array = static::getArrayFromFile();
+        if (!is_array($this->array)) {
+            $this->array = $this->getArrayFromFile();
         }
 
         if (!$key) {
-            return static::$array;
+            return $this->array;
         }
-        if (isset(static::$array[$key])) {
-            static::$array[$key];
+        if (isset($this->array[$key])) {
+            return $this->array[$key];
         }
 
         return null;
@@ -42,30 +50,30 @@ class RuntimeJsonManager
 
 
     /**
-     * set something in the static array and write the file
+     * set something in the $this->array and write the file
      *
      * @param string $key
      * @param mixed  $value
      *
      * @return void
      */
-    public static function set(string $key, $value)
+    public function set(string $key, $value)
     {
-        static::$array[$key] = $value;
-        static::writeToFile();
+        $this->array[$key] = $value;
+        $this->writeToFile();
     }
 
 
 
     /**
-     * write the static array into the file
+     * write the $this->array into the file
      *
      * @return void
      */
-    protected static function writeToFile()
+    protected function writeToFile()
     {
-        $file = fopen(static::getFilePath(), 'w', true);
-        fwrite($file, json_encode(static::$array,JSON_PRETTY_PRINT));
+        $file = fopen($this->getFilePath(), 'w', true);
+        fwrite($file, json_encode($this->array, JSON_PRETTY_PRINT));
         fclose($file);
     }
 
@@ -76,9 +84,9 @@ class RuntimeJsonManager
      *
      * @return array
      */
-    protected static function getArrayFromFile(): array
+    protected function getArrayFromFile(): array
     {
-        $json = file_get_contents(static::getFilePath());
+        $json = file_get_contents($this->getFilePath());
 
         try {
             $array = json_decode($json, true);
@@ -86,8 +94,8 @@ class RuntimeJsonManager
             $array = null;
         }
 
-        if(!is_array($array)) {
-            static::createFile();
+        if (!is_array($array)) {
+            $this->createFile();
             return [];
         }
 
@@ -101,11 +109,11 @@ class RuntimeJsonManager
      *
      * @return void
      */
-    protected static function createFileIfNotExist()
+    protected function createFileIfNotExist()
     {
-        if (!static::exists()) {
-            static::createFile();
-            static::$array = static::getEmptyTemplate();
+        if (!$this->fileExists()) {
+            $this->createFile();
+            $this->array = $this->getEmptyTemplate();
         }
     }
 
@@ -116,12 +124,12 @@ class RuntimeJsonManager
      *
      * @return void
      */
-    protected static function createFile()
+    protected function createFile()
     {
-        static::makePath(static::getDirectoryPath());
+        $this->makePath($this->getDirectoryPath());
 
-        static::$array = static::getEmptyTemplate();
-        static::writeToFile();
+        $this->array = $this->getEmptyTemplate();
+        $this->writeToFile();
     }
 
 
@@ -133,12 +141,12 @@ class RuntimeJsonManager
      *
      * @return bool
      */
-    protected static function makePath($path)
+    protected function makePath($path)
     {
         if (@mkdir($path) or @file_exists($path)) {
             return true;
         }
-        return (static::makePath(dirname($path)) and @mkdir($path));
+        return ($this->makePath(dirname($path)) and @mkdir($path));
     }
 
 
@@ -148,9 +156,9 @@ class RuntimeJsonManager
      *
      * @return bool
      */
-    protected static function exists(): bool
+    protected function fileExists(): bool
     {
-        return file_exists(static::getFilePath());
+        return file_exists($this->getFilePath());
     }
 
 
@@ -160,7 +168,7 @@ class RuntimeJsonManager
      *
      * @return string
      */
-    protected static function getDirectoryPath()
+    protected function getDirectoryPath()
     {
         $config = config("modular.runtime_json_path");
 
@@ -178,9 +186,9 @@ class RuntimeJsonManager
      *
      * @return string
      */
-    protected static function getFilePath()
+    protected function getFilePath()
     {
-        return static::getDirectoryPath() . DIRECTORY_SEPARATOR . "runtime.json";
+        return $this->getDirectoryPath() . DIRECTORY_SEPARATOR . "runtime.json";
     }
 
 
@@ -190,7 +198,7 @@ class RuntimeJsonManager
      *
      * @return array
      */
-    protected static function getEmptyTemplate()
+    protected function getEmptyTemplate()
     {
         return [
              "active_modules" => [],
